@@ -1,0 +1,11 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ template "proxy.name" . }}
+spec:
+  ingressClassName: nginx
+  defaultBackend:
+    service:
+      name: {{ template "proxy.name" . }}
+      port:
+        number: {{ .Values.service.port }}

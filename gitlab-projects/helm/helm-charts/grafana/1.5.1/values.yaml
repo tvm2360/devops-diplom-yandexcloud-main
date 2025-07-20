@@ -1,0 +1,31 @@
+image:
+  pullPolicy: IfNotPresent
+  repository: grafana/grafana
+  tag: 8.3.4
+
+containerPort: 3000
+
+servicePort: 80
+
+urlPrefix: "grafana"
+
+domain: tvm2360.ru
+
+prometheusService: prometheus
+
+influxdbService:
+
+dashboards:
+  - k6-results
+  - spring-boot
+  - k8s-global
+  - k8s-namespaces
+  - k8s-pods
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 500m
+    memory: 1024Mi

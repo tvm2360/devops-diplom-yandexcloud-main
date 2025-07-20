@@ -1,0 +1,17 @@
+default:
+  image: $CI_REGISTRY/$CI_REPOSITORY/docker-image-tvm2360-cicd:1.0.0
+  before_script:
+    - cat $CI_SA_PUSHER_KEY_BASE64 | base64 -d | docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY/$CI_REPOSITORY
+    - mkdir -p ~/.kube && cat $CI_KUBE_CONFIG_BASE64 | base64 -d > ~/.kube/config
+
+stages:
+  - deploy
+
+deploy:
+  stage: deploy
+  script:
+    - chmod +x ./deploy.sh
+    - sh ./deploy.sh
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_APPROVED && $CI_COMMIT_BRANCH == "main"'

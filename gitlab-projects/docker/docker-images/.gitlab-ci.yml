@@ -1,0 +1,23 @@
+default:
+  image: docker:24.0.5
+  services:
+    - docker:24.0.5-dind
+  before_script:
+    - cat $CI_SA_PUSHER_KEY_BASE64 | base64 -d | docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY/$CI_REPOSITORY
+
+stages:
+  - push
+
+variables:
+  DOCKER_IMAGE_TAG: "latest"
+
+push:
+  stage: push
+  script:
+    - chmod +x ./build.sh
+    - sh ./build.sh
+    - chmod +x ./push.sh
+    - sh ./push.sh
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_APPROVED && $CI_COMMIT_BRANCH == "main"'

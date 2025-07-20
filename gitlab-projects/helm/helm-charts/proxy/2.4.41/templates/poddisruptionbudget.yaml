@@ -1,0 +1,10 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: {{ template "proxy.name" . }}-pdb
+  namespace: {{ .Values.namespace }}
+spec:
+  maxUnavailable: {{ .Values.maxUnavailable }}
+  selector:
+    matchLabels:
+      app: {{ template "proxy.name" . }}

@@ -1,0 +1,125 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "proxy.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+    chart: {{ .Chart.Name }}
+    app: {{ template "proxy.name" . }}
+    {{- range $key, $value := .Values.labels }}
+    {{ $key }}: {{ $value }}
+    {{- end }}
+spec:
+  replicas: {{ .Values.replicas }}
+  selector:
+    matchLabels:
+      app: {{ template "proxy.name" . }}
+  strategy:
+    type: {{ .Values.strategy }}
+    rollingUpdate:
+      maxSurge: {{ .Values.maxSurge }}
+      maxUnavailable: {{ .Values.maxUnavailable }}
+  template:
+    metadata:
+      name: {{ template "proxy.name" . }}
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+      labels:
+        release: {{ .Release.Name }}
+        chart: {{ .Chart.Name }}
+        app: {{ template "proxy.name" . }}
+    spec:
+{{- with .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{- toYaml . | nindent 8 }}
+{{- end }}
+      {{- with .Values.tolerations }}
+      tolerations:
+{{ toYaml . | indent 6 }}
+      {{- end }}
+      {{- with .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml . | indent 8 }}
+      {{- end }}
+      {{- if or (eq .Values.antiAffinity "hard") (eq .Values.antiAffinity "soft") .Values.nodeAffinity }}
+      {{- if .Values.priorityClassName }}
+      priorityClassName: {{ .Values.priorityClassName }}
+      {{- end }}
+      affinity:
+      {{- end }}
+      {{- if eq .Values.antiAffinity "hard" }}
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+          - labelSelector:
+              matchExpressions:
+              - key: app
+                operator: In
+                values:
+                - "{{ template "proxy.name" .}}"
+            topologyKey: {{ .Values.antiAffinityTopologyKey }}
+      {{- else if eq .Values.antiAffinity "soft" }}
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: {{ .Values.antiAffinityTopologyKey }}
+              labelSelector:
+                matchExpressions:
+                - key: app
+                  operator: In
+                  values:
+                  - "{{ template "proxy.name" . }}"
+      {{- end }}
+      {{- with .Values.nodeAffinity }}
+        nodeAffinity:
+{{ toYaml . | indent 10 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.terminationGracePeriod }}
+      enableServiceLinks: {{ .Values.enableServiceLinks }}
+      restartPolicy: {{ .Values.restartPolicy }}
+      containers:
+        - name: {{ template "proxy.name" . }}
+          securityContext:
+{{ toYaml .Values.securityContext | indent 12 }}
+          image: "{{ .Values.image }}:{{ .Values.imageTag }}"
+          imagePullPolicy: "{{ .Values.imagePullPolicy }}"
+          livenessProbe:
+{{ toYaml .Values.livenessProbe | indent 12 }}
+          readinessProbe:
+{{ toYaml .Values.readinessProbe | indent 12 }}
+          ports:
+          - name: http
+            containerPort: {{ .Values.httpPort }}
+          resources:
+{{ toYaml .Values.resources | indent 12 }}
+{{- if .Values.lifecycle }}
+          lifecycle:
+{{ toYaml .Values.lifecycle | indent 12 }}
+{{- end }}
+          volumeMounts:
+            - name: proxy-conf
+              mountPath: /etc/apache2/sites-enabled/proxy.conf
+              readOnly: true
+              subPath: proxy.conf
+            - name: proxy-ports-conf
+              mountPath: /etc/apache2/ports.conf
+              readOnly: true
+              subPath: ports.conf
+      volumes:
+        - name: proxy-conf
+          configMap:
+            name: proxy-configmap
+            items:
+              - key: proxy.conf
+                path: proxy.conf
+                mode: 0444
+        - name: proxy-ports-conf
+          configMap:
+            name: proxy-configmap
+            items:
+              - key: ports.conf
+                path: ports.conf
+                mode: 0444

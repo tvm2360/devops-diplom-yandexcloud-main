@@ -1,0 +1,16 @@
+image:
+  pullPolicy: IfNotPresent
+  repository: prom/node-exporter
+  tag: v1.8.1
+
+port: 9100
+
+serviceName:
+
+resources:
+  requests:
+    cpu: 100m
+    memory: 256Mi
+  limits:
+    cpu: 200m
+    memory: 512Mi

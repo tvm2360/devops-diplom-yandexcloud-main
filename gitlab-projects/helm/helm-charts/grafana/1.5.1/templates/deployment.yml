@@ -1,0 +1,65 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    app.kubernetes.io/name: {{ .Chart.Name }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+    app.kubernetes.io/component: monitoring
+    app.kubernetes.io/managed-by: helm
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ .Chart.Name }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.kubernetes.io/version: {{ .Chart.AppVersion | quote }}
+        app.kubernetes.io/component: monitoring
+        app.kubernetes.io/managed-by: helm
+    spec:
+      containers:
+        - name: {{ .Release.Name }}
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
+          imagePullPolicy: {{ .Values.image.pullPolicy }}
+          resources:
+            limits:
+              memory: {{ .Values.resources.limits.memory }}
+              cpu: {{ .Values.resources.limits.cpu }}
+            requests:
+              memory: {{ .Values.resources.requests.memory }}
+              cpu: {{ .Values.resources.requests.cpu }}
+          ports:
+            - containerPort: {{ .Values.containerPort }}
+          env:
+            - name: GF_SERVER_DOMAIN
+              value: {{ .Values.domain | quote }}
+            - name: GF_SERVER_ROOT_URL
+              value: "%(protocol)s://%(domain)s/{{ .Values.urlPrefix }}"
+            - name: GF_SERVER_SERVE_FROM_SUB_PATH
+              value: "true"
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: {{ .Chart.Name }}-storage-volume
+            - mountPath: /etc/grafana/provisioning/datasources/datasources.yml
+              name: {{ .Chart.Name }}-config-volume
+              subPath: datasources.yml
+            - mountPath: /etc/grafana/provisioning/dashboards/dashboards.yml
+              name: {{ .Chart.Name }}-config-volume
+              subPath: dashboards.yml
+            {{- range $dashboard := .Values.dashboards }}
+            - mountPath: /etc/grafana/provisioning/dashboards/dashboards/{{ $dashboard }}.json
+              name: {{ $.Chart.Name }}-config-volume
+              subPath: {{ $dashboard }}.json
+            {{- end }}
+      volumes:
+        - name: {{ .Chart.Name }}-storage-volume
+        - name: {{ .Chart.Name }}-config-volume
+          configMap:
+            defaultMode: 420
+            name: {{ .Release.Name }}

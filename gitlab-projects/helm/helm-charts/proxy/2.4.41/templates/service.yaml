@@ -1,0 +1,25 @@
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ template "proxy.name" . }}
+  namespace: {{ .Values.namespace }}
+  labels:
+    app: {{ template "proxy.name" . }}
+    chart: {{ .Chart.Name }}
+    heritage: {{ .Release.Service }}
+    release: {{ .Release.Name }}
+  annotations:
+{{ toYaml .Values.service.annotations | indent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  selector:
+    app: {{ template "proxy.name" . }}
+    chart: {{ .Chart.Name }}
+    release: {{ .Release.Name }}
+  publishNotReadyAddresses: false
+  ports:
+    - name: http
+      port: {{ .Values.service.port }}
+      protocol: TCP
+      targetPort: {{ .Values.httpPort }}

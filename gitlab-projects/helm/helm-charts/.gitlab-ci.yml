@@ -1,0 +1,23 @@
+default:
+  image: $CI_REGISTRY/$CI_REPOSITORY/docker-image-tvm2360-cicd:1.0.0
+  before_script:
+    - cat $CI_SA_PUSHER_KEY_BASE64 | base64 -d | docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY/$CI_REPOSITORY
+
+stages:
+  - lint
+  - pack_and_push
+
+lint:
+  stage: lint
+  script:
+    - chmod +x ./lint.sh
+    - sh ./lint.sh
+
+pack_and_push:
+  stage: pack_and_push
+  script:
+    - chmod +x ./pack_and_push.sh
+    - sh ./pack_and_push.sh
+  rules:
+    - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main"'
+    - if: '$CI_MERGE_REQUEST_APPROVED && $CI_COMMIT_BRANCH == "main"'

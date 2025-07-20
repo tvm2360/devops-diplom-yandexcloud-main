@@ -1,0 +1,87 @@
+NAME: tvm2360-app-test
+LAST DEPLOYED: Wed Jul 16 11:07:50 2025
+NAMESPACE: tvm2360
+STATUS: pending-install
+REVISION: 1
+HOOKS:
+---
+# Source: tvm2360-app-test/templates/tests/test-connection.yaml
+apiVersion: v1
+kind: Pod
+metadata:
+  name: "tvm2360-app-test-test-connection"
+  annotations:
+    "helm.sh/hook": test
+spec:
+  containers:
+    - name: wget
+      image: busybox
+      command: ['wget']
+      args: ['tvm2360-app-test-web:80']
+  restartPolicy: Never
+MANIFEST:
+---
+# Source: tvm2360-app-test/templates/service.yaml
+apiVersion: v1
+kind: Service
+metadata:
+  name: tvm2360-app-test
+  labels:
+    app: tvm2360-app-test
+spec:
+  type: ClusterIP
+  selector:
+    app: tvm2360-app-test
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+---
+# Source: tvm2360-app-test/templates/service.yaml
+kind: Service
+apiVersion: v1
+metadata:
+  name: tvm2360-app-test-headless
+  labels:
+    app: tvm2360-app-test
+spec:
+  clusterIP: None
+  selector:
+    app: tvm2360-app-test
+  ports:
+    - port: 80
+      targetPort: 80
+      protocol: TCP
+---
+# Source: tvm2360-app-test/templates/deployment.yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: tvm2360-app-test-deployment
+spec:
+  replicas: 3
+  serviceName: tvm2360-app-test-headless
+  selector:
+    matchLabels:
+      app: tvm2360-app-test
+  template:
+    metadata:
+      labels:
+        app: tvm2360-app-test
+    spec:
+      containers:
+        - name: tvm2360-app-test
+          image: "cr.yandex/crplnc7jr80hll05i6jc/docker-image-tvm2360-nginx-test:latest"
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 80
+              protocol: TCP
+          resources:
+            limits:
+              memory: 256Mi
+              cpu: 200m
+            requests:
+              memory: 128Mi
+              cpu: 100m
+

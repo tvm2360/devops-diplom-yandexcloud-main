@@ -1,0 +1,32 @@
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: proxy-configmap
+  namespace: {{ .Values.namespace }}
+  labels:
+    heritage: {{ .Release.Service}}
+    release: {{ .Release.Name}}
+    chart: {{ .Chart.Name }}
+    app: {{ template "proxy.name" . }}
+data:
+  ports.conf: |
+    Listen {{ .Values.listenHttp }}:{{ .Values.httpPort }}
+  proxy.conf: |
+    <VirtualHost *:{{ .Values.httpPort }}>
+        ServerName tvm2360.ru
+        DocumentRoot /var/www/html
+        CustomLog /var/log/apache2/web-log combined
+        ErrorLog /var/log/apache2/web-err.log
+        LogLevel warn rewrite:trace8
+        LimitRequestBody 134217728
+        ProxyPreserveHost On
+        <Location /test>
+           ProxyPass http://tvm2360-app-test.tvm2360
+           ProxyPassReverse http://tvm2360-app-test.tvm2360
+        </Location>
+        <Location /grafana>
+           ProxyPass http://grafana.monitoring/grafana
+           ProxyPassReverse http://grafana.monitoring/grafana
+        </Location>
+    </VirtualHost>

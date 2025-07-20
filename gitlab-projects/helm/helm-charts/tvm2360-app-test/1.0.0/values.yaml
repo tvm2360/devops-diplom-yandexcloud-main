@@ -1,0 +1,15 @@
+replicaCount: 1
+image:
+  repository: cr.yandex/crplnc7jr80hll05i6jc/docker-image-tvm2360-nginx-test
+  tag: latest
+  pullPolicy: IfNotPresent
+service:
+  type: ClusterIP
+  port: 80
+resources:
+  requests:
+    cpu: 100m
+    memory: 128Mi
+  limits:
+    cpu: 200m
+    memory: 256Mi
