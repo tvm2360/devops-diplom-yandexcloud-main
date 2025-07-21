@@ -23,6 +23,8 @@
 + helm - группа, содержащая репозитории с различными версиями чартов helm, для их размещения в registry и дальнейшего развертывания в k8s, а также репозитории helm values
 + kubernetes - группа, содержащая различные функциональные сущности
 
+Разворачивание приложений (тест-задания, компонент мониторинга и пр.) будет происходить отсюда.
+
 Схема стенда показана на рисунке:
 
 ![Stand](./pictures/Stand.png)
@@ -71,6 +73,7 @@ ssh jumphost.tvm2360.ru
 ```
 cd ..
 ./start_reg_runners.sh
+exit
 ```
 Ждем окончания процесса...
 
@@ -80,9 +83,26 @@ cd ..
 
 ![Runners](./pictures/Runners.png)
 
+Теперь приступаем к настройке переменных окружения. Заходим в Admin Area -> Settings -> CI/CD -> Variables и добавляем (не забывая проверять установленный признак Protect variable):
 
++ key:CI_REGISTRY type:VARIABLE value:cr.yandex
++ key:CI_REGISTRY_USER type:VARIABLE value:json_key
++ key:CI_REPOSITORY type:VARIABLE value:<вставляем ID реестра devops-diplom-registry>
 
+Для установки значения следующей переменной необходимо сгенерировать ключ сервисного аккаунта sa-devops-diplom-registry-pusher. Для этого:
+```
+yc iam key create --service-account-name sa-devops-diplom-registry-pusher -o sa-devops-diplom-registry-pusher-key.json
+cat sa-devops-diplom-registry-pusher-key.json | base64     -----> вывод копируем в буфер обмена
+rm sa-devops-diplom-registry-pusher-key.json
+```
++ key:CI_SA_PUSHER_KEY_BASE64 type:FILE value:<вставляем из буфера обмена>
 
+Для установки значения следующей переменной необходимо зайти через ssh на jumphost:
+```
+ssh jumphost.tvm2360.ru
+cat /home/ubuntu/.kube/config | base64      -----> вывод копируем в буфер обмена
+```
++ key:CI_KUBE_CONFIG_BASE64 type:FILE value:<вставляем из буфера обмена>
 
 
 
