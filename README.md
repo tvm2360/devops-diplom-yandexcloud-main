@@ -150,6 +150,9 @@ cat /home/ubuntu/.kube/config | base64      -----> вывод копируем �
 
 ![Repo-Helm-Charts](./pictures/Repo-Helm-Charts.png)
 
+Результат - образы helm chart в нашем registry:
+
+![Helm-Charts-In-Registry](./pictures/Helm-Charts-In-Registry.png)
 
 
 
