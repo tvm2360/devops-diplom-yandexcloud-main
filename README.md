@@ -44,7 +44,7 @@
 ```
 ssh -t -i ~/.ssh/id_yc_ed25519 ubuntu@jumphost.tvm2360.ru ssh -i ~/.ssh/id_yc_ed25519_1 ubuntu@<Внутренний IP Gitlab> sudo cat /etc/gitlab/initial_root_password
 ```
-, а также ключ для работы с репозиторием gitlab:
+, а также сгенерировать ключ для работы с репозиторием gitlab:
 ```
 ssh-keygen -t ed25519 -C "tvm2360@gitlab.tvm2360.ru" -f ~/.ssh/id_ed25519_gitlab
 ```
@@ -61,5 +61,32 @@ Host gitlab.tvm2360.ru
 Теперь затянем ключ для работы с репозиторием. Заходим Edit Profile -> SSH Keys -> Add new key и в Key вставляем содержимое ```cat ~/.ssh/id_ed25519_gitlab.pub``` без tvm2360@gitlab.tvm2360.ru, в Title tvm2360@gitlab.tvm2360.ru
 
 Далее активируем runner's. Заходим в Admin Area -> CI/CD -> Runners -> New instance runner, платформу выбираем Linux, отмечаем Run untagged jobs, в Runner description вставляем имя раннера, можно имя инстанса (gitlab-runner1) -> Create runner.
+Запоминаем токен, заходим через ssh на jumphost и в директорию /opt/gitlab-runners/inventory:
+```
+ssh jumphost.tvm2360.ru
+/opt/gitlab-runners/inventory
+```
+Там находятся подготовленные файлы с конфигурациями ansible для разворачивания gitlab-runner. Количество фалов соответствует количеству инстансов в группе ig-gitlab-runners. Находим нужную конфигурацию по IP в ansible_host, если runner'ов используется несколько, и в поле gitlab_registration_token вставляем токен.
+Как только все токены внесены, возвращаемся на каталог выше и запускаем ansible-playbook:
+```
+cd ..
+./start_reg_runners.sh
+```
+Ждем окончания процесса...
 
-Запоминаем токен, заходим через на jumphost
+![Ansible-Gitlab-Runners](./pictures/Ansible-Gitlab-Runners.png)
+
+Возвращаемся в gitlab View Runners - runner подключен и ожидает заданий
+
+![Runners](./pictures/Runners.png)
+
+
+
+
+
+
+
+
+
+
+
