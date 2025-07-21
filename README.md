@@ -104,7 +104,11 @@ cat /home/ubuntu/.kube/config | base64      -----> вывод копируем �
 ```
 + key:CI_KUBE_CONFIG_BASE64 type:FILE value:<вставляем из буфера обмена>
 
+![CICD-Variables](./pictures/CICD-Variables.png)
 
+Далее добавляем группы: docker, helm и kubernetes
+
+![Repo-Groups](./pictures/Repo-Groups.png)
 
 
 
