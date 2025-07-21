@@ -135,6 +135,21 @@ cat /home/ubuntu/.kube/config | base64      -----> вывод копируем �
 
 ![Docker-Image-In-Registry](./pictures/Docker-Image-In-Registry.png)
 
+Начинаем с загрузки репозитория helm-charts группы helm:
+```
+./import_project_helm-charts.sh
+```
+
+Сразу после загрузки начнет работать pipeline - проверка синтаксиса, упаковка и отправка helm chart в registry:
+
+![Pipeline-Helm-Charts](./pictures/Pipeline-Helm-Charts.png)
+
+![Job-Helm-Charts](./pictures/Job-Helm-Charts.png)
+
+Успешно загруженный проект в репозиторий:
+
+![Repo-Helm-Charts](./pictures/Repo-Helm-Charts.png)
+
 
 
 
