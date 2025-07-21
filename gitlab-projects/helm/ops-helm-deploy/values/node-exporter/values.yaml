@@ -1,5 +1,5 @@
 image:
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
   repository: prom/node-exporter
   tag: v1.8.1
 

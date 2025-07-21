@@ -22,8 +22,8 @@ data:
         LimitRequestBody 134217728
         ProxyPreserveHost On
         <Location /test>
-           ProxyPass http://tvm2360-app-test.tvm2360
-           ProxyPassReverse http://tvm2360-app-test.tvm2360
+           ProxyPass http://tvm2360-app-test.tvm2360/test
+           ProxyPassReverse http://tvm2360-app-test.tvm2360/test
         </Location>
         <Location /grafana>
            ProxyPass http://grafana.monitoring/grafana
