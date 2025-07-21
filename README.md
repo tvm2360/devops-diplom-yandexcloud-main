@@ -3,6 +3,9 @@
   * [Описание](#Описание)
   * [Подготовка](#Подготовка)
   * [Разворачивание](#Разворачивание)
+  * [Gitlab](#Gitlab)
+  * [Тест](#Тест)
+  * [Мониторинг](#Мониторинг)
 
 ---
 ### Описание
@@ -200,11 +203,31 @@ cat /home/ubuntu/.kube/config | base64      -----> вывод копируем �
 
 Логи показывают, что инфраструктура ALB видит развернутый в tvm2360 сервис proxy.
 
+### Тест
+
 В любом браузере https://tvm2360.ru/test и попадаем на страницу тестового приложения:
 
 ![Test](./pictures/Test.png)
 
+### Мониторинг
 
+В любом браузере https://tvm2360.ru/grafana и попадаем в систему мониторинга Grafana. Первый вход admin/admin, меняем пароль, попадаем на главный экран:
 
+![Grafana-Main](./pictures/Grafana-Main.png)
 
+Dashboards загруженные в Grafana:
+
+![Grafana-Dashboards](./pictures/Grafana-Dashboards.png)
+
+Основные метрики кластера k8s:
+
+![Grafana-Dashboard-View-Global](./pictures/Grafana-Dashboard-View-Global.png)
+
+В разрезе namespace:
+
+![Grafana-Dashboard-View-Namespace](./pictures/Grafana-Dashboard-View-Namespace.png)
+
+В разрезе pods:
+
+![Grafana-Dashboard-View-Pods](./pictures/Grafana-Dashboard-View-Pods.png)
 
