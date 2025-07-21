@@ -4,7 +4,7 @@ replicas: 3
 
 masterService: ""
 
-image: "cr.yandex/crpn6aaerje2gjt15uh5/docker-image-tvm2360-web-proxy"
+image: "cr.yandex/crpchbsamuk14ea1q741/docker-image-tvm2360-web-proxy"
 
 imageTag: "latest"
 
