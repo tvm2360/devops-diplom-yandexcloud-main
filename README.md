@@ -110,6 +110,32 @@ cat /home/ubuntu/.kube/config | base64      -----> вывод копируем �
 
 ![Repo-Groups](./pictures/Repo-Groups.png)
 
+Теперь начинаем создавать репозитории в Gitlab. Исходники находятся в каталоге gitlab-projects, средства загрузки - скрипты:
++ import_project_docker-images.sh
++ import_project_helm-charts.sh
++ import_project_ops-helm-deploy.sh
++ import_project_ops-k8s-deploy.sh
+
+Начинаем с загрузки репозитория docker-images группы docker:
+```
+./import_project_docker-images.sh
+```
+
+![Push](./pictures/Push.png)
+
+Сразу после загрузки начнет работать pipeline:
+
+![Pipeline](./pictures/Pipeline.png)
+
+Успешно загруженный проект в репозиторий и прошедший Job:
+
+![Repo-Docker-Image](./pictures/Repo-Docker-Image.png)
+
+Результат - образы контейнеров docker в нашем registry:
+
+![Docker-Image-In-Registry](./pictures/Docker-Image-In-Registry.png)
+
+
 
 
 
