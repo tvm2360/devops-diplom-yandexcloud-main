@@ -6,6 +6,7 @@
   * [Gitlab](#Gitlab)
   * [Тест](#Тест)
   * [Мониторинг](#Мониторинг)
+  * [Масштабирование](#Масштабирование)
 
 ---
 ### Описание
@@ -231,3 +232,32 @@ Dashboards загруженные в Grafana:
 
 ![Grafana-Dashboard-View-Pods](./pictures/Grafana-Dashboard-View-Pods.png)
 
+### Масштабирование
+
+Проведем масштабирование Kubernetes. Предположим, что нам понадобился еще одна рабочая нода. Ддя этого создаем ветку, редактируем ig.auto.tfvars, увеличиваем workers count на единицу:
+
+![K8s-Add-Worker-Node](./pictures/K8s-Add-Worker-Node.png)
+
+Создаем коммит, затем PR и анализируем план: в инстанс группу ig-k8s-workers добавляется 4-й инстанс, обновляется kubesparay inventory (добавляется wokker4)
+
+![K8s-Terraform-Plan](./pictures/K8s-Terraform-Plan.png)
+
+Принимаем слияние (Merge PR). Начался применяться план, добавляется VM:
+
+![K8s-Add-Vm](./pictures/K8s-Add-Vm.png)
+
+В процессе применения плана запускается kubespray с новыми настройками в inventory:
+
+![K8s-Kubespray](./pictures/K8s-Kubespray.png)
+
+После окончания применения плана проверяем ноды:
+
+![K8s-Nodes](./pictures/K8s-Nodes.png)
+
+Просматриваем поды в "свежедобавленной" ноде:
+
+![K8s-New-Node-Pods](./pictures/K8s-New-Node-Pods.png)
+
+Добавлен стандартный набор kube-system, драйвер NFS, контроллер Ingress, сборщик метрик Node-Explorer. В систему мониторинга начали поступать метрики добавленной ноды:
+
+![K8s-Grafana](./pictures/K8s-Grafana.png)
