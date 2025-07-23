@@ -110,6 +110,10 @@ cat /home/ubuntu/.kube/config | base64      -----> вывод копируем �
 
 ![CICD-Variables](./pictures/CICD-Variables.png)
 
+Добавим автоустановку призанака "Protected" на добавляемые теги на основе wildcard:
+
+![Protect_Tags](./pictures/Protect_Tags.png)
+
 Далее добавляем группы проектов: docker, helm и kubernetes
 
 ![Repo-Groups](./pictures/Repo-Groups.png)
@@ -206,9 +210,41 @@ cat /home/ubuntu/.kube/config | base64      -----> вывод копируем �
 
 ### Тест
 
+Проведем тесирования авторазвертывания тестового приложения из ветки main и из добавляемых тегов. Формирование образа контейнера и выгрузка в регистри стартовала сразу после загрузки проекта:
+
+![Test_Push_Master.png](./pictures/Test_Push_Master.png)
+
+Добавляем tag:
+
+![Test_Add_Tag](./pictures/Test_Add_Tag.png)
+
+После добавления тега запустилям job push_tag_and_deploy:
+
+![Test_Start_Push_and_Deploy](./pictures/Test_Start_Push_and_Deploy.png)
+
+В логах выгрузка образа с в регистри:
+
+![Test_Push_Tag](./pictures/Test_Push_Tag.png)
+
+И deploy:
+
+![Test_Deploy_Tag](./pictures/Test_Deploy_Tag.png)
+
+В registry:
+
+![Test_Docker_Images](./pictures/Test_Docker_Images.png)
+
+Заходим ssh на jumphost.tvm2360.ru и запускаем утилиту k9s. В подах присутствует тестовое приложение tvm2360-app-test
+
+![Test_Pods](./pictures/Test_Pods.png)
+
+В describe любого из подов тестового приложения образ контейнера с label тега:
+
+![Test_Pods_Describe](./pictures/Test_Pods_Describe.png)
+
 В любом браузере заходим на https://tvm2360.ru/test и попадаем на страницу тестового приложения:
 
-![Test](./pictures/Test.png)
+![Test_Web](./pictures/Test_Web.png)
 
 ### Мониторинг
 
