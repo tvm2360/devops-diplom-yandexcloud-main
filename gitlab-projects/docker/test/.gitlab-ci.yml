@@ -1,30 +1,28 @@
-stages:
-  - push
-
-.dind: &dind_template
-  stage: push
-  image: docker:24.0.5
-  services:
-    - docker:24.0.5-dind
-
-push:latest:
-  <<: *dind_template
-  script:
-    - env
+default:
+  image: $CI_REGISTRY/$CI_REPOSITORY/docker-image-tvm2360-cicd:1.0.0
+  before_script:
     - cat $CI_SA_PUSHER_KEY_BASE64 | base64 -d | docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY/$CI_REPOSITORY
+
+stages:
+  - push_latest
+  - push_tag_and_deploy
+  
+push_latest:
+  stage: push_latest
+  script:
     - docker build -t $CI_REGISTRY/$CI_REPOSITORY/docker-image-test-tvm2360:latest .
     - docker push $CI_REGISTRY/$CI_REPOSITORY/docker-image-test-tvm2360:latest
   rules:
     - if: '$CI_PIPELINE_SOURCE == "push" && $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG == null'
     - if: '$CI_MERGE_REQUEST_APPROVED && $CI_COMMIT_BRANCH == "main" && $CI_COMMIT_TAG == null'
 
-push:tag:
-  <<: *dind_template
+push_tag_and_deploy:
+  stage: push_tag_and_deploy
   script:
-    - env
-    - cat $CI_SA_PUSHER_KEY_BASE64 | base64 -d | docker login --username $CI_REGISTRY_USER --password-stdin $CI_REGISTRY/$CI_REPOSITORY
     - docker build -t $CI_REGISTRY/$CI_REPOSITORY/docker-image-test-tvm2360:$CI_COMMIT_TAG .
     - docker push $CI_REGISTRY/$CI_REPOSITORY/docker-image-test-tvm2360:$CI_COMMIT_TAG
+    - mkdir -p ~/.kube && cat $CI_KUBE_CONFIG_BASE64 | base64 -d > ~/.kube/config
+    - helm upgrade --install tvm2360-app-test -f ./helm/values.yaml ./helm/. --namespace tvm2360 --create-namespace --wait --set image.repository="${CI_REGISTRY}/${CI_REPOSITORY}/docker-image-test-tvm2360" --set image.tag="${CI_COMMIT_TAG}"
   rules:
     - if: '$CI_COMMIT_TAG'
-
+  
