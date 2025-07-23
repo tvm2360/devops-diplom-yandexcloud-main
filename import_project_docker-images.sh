@@ -5,6 +5,6 @@ git init
 git checkout -b main
 git remote add origin git@gitlab.tvm2360.ru:docker/docker-images.git
 git add .
-git commit -m "Create repository docker/dockerimage"
+git commit -m "Create repository docker/docker-image"
 git push origin main
 cd ../../..

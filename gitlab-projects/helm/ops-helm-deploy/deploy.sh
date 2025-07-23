@@ -2,10 +2,6 @@
 
 config=$(cat <<EOF
 charts:
-- chart_name: tvm2360-app-test
-  release_name: tvm2360-app-test
-  namespace: tvm2360
-  versions: 1.0.0
 - chart_name: proxy
   release_name: proxy
   namespace: tvm2360

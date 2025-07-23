@@ -36,12 +36,12 @@
 ---
 ### Подготовка
 ---
-Процесс подготовки перед разворачиванием основной инфраструктуры описана в [devops-diplom-yandexcloud-prepare](https://github.com/tvm2360/devops-diplom-yandexcloud-prepare)
+Процесс подготовки перед разворачиванием основной инфраструктуры описан в [devops-diplom-yandexcloud-prepare](https://github.com/tvm2360/devops-diplom-yandexcloud-prepare)
 
 ---
 ### Разворачивание
 ---
-Процесс разворачивания основной инфраструктуры описана в [devops-diplom-yandexcloud-infrastructure](https://github.com/tvm2360/devops-diplom-yandexcloud-infrastructure)
+Процесс разворачивания основной инфраструктуры описан в [devops-diplom-yandexcloud-infrastructure](https://github.com/tvm2360/devops-diplom-yandexcloud-infrastructure)
 
 ---
 ### Gitlab
@@ -234,11 +234,11 @@ Dashboards загруженные в Grafana:
 
 ### Масштабирование
 
-Проведем масштабирование Kubernetes. Предположим, что нам понадобился еще одна рабочая нода. Ддя этого создаем ветку, редактируем ig.auto.tfvars, увеличиваем workers count на единицу:
+Проведем масштабирование Kubernetes. Предположим, что нам понадобился еще одна рабочая нода. Для этого создаем ветку, редактируем ig.auto.tfvars, увеличиваем workers count на единицу:
 
 ![K8s-Add-Worker-Node](./pictures/K8s-Add-Worker-Node.png)
 
-Создаем коммит, затем PR и анализируем план: в инстанс группу ig-k8s-workers добавляется 4-й инстанс, обновляется kubesparay inventory (добавляется wokker4)
+Создаем коммит, затем PR и анализируем план: в инстанс группу ig-k8s-workers добавляется 4-й инстанс, обновляется kubesparay inventory (добавляется worker4)
 
 ![K8s-Terraform-Plan](./pictures/K8s-Terraform-Plan.png)
 
