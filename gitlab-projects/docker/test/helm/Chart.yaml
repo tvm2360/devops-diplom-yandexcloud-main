@@ -1,0 +1,6 @@
+apiVersion: v2
+name: tvm2360-app-test
+description: A Helm chart for testing devops-diplom-yandexcloud by tvm2360
+type: application
+version: 1.0.0
+appVersion: "1.28.0"
